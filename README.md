@@ -35,7 +35,7 @@ This is a simple Telegram bot implemented in Golang.
 
 ## Usage
 
-	You can interact with the bot at [t.me/YourBotName_bot](https://t.me/YourBotName_bot).
+	You can interact with the bot at https://t.me/YourBotName_bot.
         Then push message:
 
         /start hello
