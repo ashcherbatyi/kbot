@@ -33,7 +33,7 @@ This is a simple Telegram bot implemented in Golang.
         go build -ldflags "-X=github.com/<yourname>/kbot/cmd.appversion=v1.0.2"
         ./kbot start
 
-## Usage
+##  Usage
 
 	You can interact with the bot at https://t.me/YourBotName_bot.
         Then push message:
