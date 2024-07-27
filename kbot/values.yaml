@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: ashcherbatyi27
-  tag: v0.0.5-d22ad63
+  tag: v1.0.3-a524ef8
   arch: amd64
 
 teleToken: ""
