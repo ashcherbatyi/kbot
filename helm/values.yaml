@@ -5,7 +5,7 @@
 replicaCount: 1
 image:
   repository: ghcr.io/ashcherbatyi
-  tag: v1.0.3-31531fc
+  tag: v1.0.3-ceb6499
   arch: amd64
   os: linux
 teleToken: ""
