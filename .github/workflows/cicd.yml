@@ -31,6 +31,18 @@ jobs:
                 APP: "kbot"
                 REGISTRY: ghcr.io/ashcherbatyi
               run: make image push
+
+            - name: Run container and test
+              env:
+                TELE_TOKEN: ${{ secrets.TELE_TOKEN }}
+              run: |
+                docker run -d --name kbot_test \
+                  -e TELE_TOKEN=${{ secrets.TELE_TOKEN }} \
+                  ghcr.io/ashcherbatyi27/kbot:${{ steps.build.outputs.version }}-linux-amd64
+                sleep 3
+                docker logs kbot_test
+                docker stop kbot_test
+                docker rm kbot_test
     cd:
         name: CD
         needs: ci
