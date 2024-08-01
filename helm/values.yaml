@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   registry: "ghcr.io"
   repository: ashcherbatyi
-  tag: v1.0.3-aa7e75d
+  tag: v1.0.3-52edd3a
   arch: amd64
 teleToken: ""
 secret:
