@@ -1,0 +1,73 @@
+name: KBOT-CICD
+
+on: 
+    push:
+        branches:
+            - develop
+
+jobs:
+    ci:
+        name: CI
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            - name: Determine version
+              id: build
+              run: echo "version=$(git describe --tags --abbrev=0)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+            - name: Run test
+              run: make test
+
+            - name: GitHub Container Registry Login
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ secrets.DOCHERHUB_USERNAME }}
+                password: ${{ secrets.DOCHERHUB_TOKEN }}
+                
+            - name: Build&Push
+              env:
+                APP: "kbot"
+                REGISTRY: ghcr.io/ashcherbatyi
+              run: make image push
+
+            - name: Run container and test
+              env:
+                TELE_TOKEN: ${{ secrets.TELE_TOKEN }}
+                VERSION: ${{ env.version }}
+              run: |
+                docker run -d --name kbot_test \
+                  -e TELE_TOKEN=${{ secrets.TELE_TOKEN }} \
+                  ghcr.io/ashcherbatyi/kbot:${{ env.VERSION }}-linux-amd64
+                sleep 2
+                docker logs kbot_test > container_logs.txt
+                if ! grep -q "kbot started ${{ env.version }}" container_logs.txt; then
+                echo "Expected log message not found!"
+                exit 1
+                fi
+                docker stop kbot_test
+                docker rm kbot_test
+    cd:
+        name: CD
+        needs: ci
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - run: echo "VERSION=$(git describe --tags --abbrev=0)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+        - uses: mikefarah/yq@master
+          with:
+            cmd: yq -i '.image.tag=strenv(VERSION)' helm/values.yaml
+
+        - run: |
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git commit -am "update version $VERSION"
+            git push

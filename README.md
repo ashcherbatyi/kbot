@@ -33,6 +33,11 @@ This is a simple Telegram bot implemented in Golang.
         go build -ldflags "-X=github.com/<yourname>/kbot/cmd.appversion=v1.0.2"
         ./kbot start
 
+
+## CI/CD Workflow
+
+<img src="./images/2.svg" alt="CI/CD Workflow" width="600"/>
+
 ##  Usage
 
 	You can interact with the bot at https://t.me/YourBotName_bot.
