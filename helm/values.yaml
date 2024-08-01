@@ -4,8 +4,7 @@
 
 replicaCount: 1
 image:
-  registry: ghcr.io/dapr
-  repository: ashcherbatyi
+  repository: ghcr.io/ashcherbatyi
   tag: v1.0.3-f04af49
   arch: amd64
   os: linux
