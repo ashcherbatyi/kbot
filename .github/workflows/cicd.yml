@@ -1,6 +1,9 @@
 name: KBOT-CICD
 
-on: push
+on: 
+    push:
+        branches:
+            - develop
 
 jobs:
     ci:
@@ -9,21 +12,24 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                 fetch-depth: 0
 
             - name: Run test
               run: make test
-            - name: Docker Hub Login
+
+            - name: GitHub Container Registry Login
               uses: docker/login-action@v2
               with:
+                registry: ghcr.io
                 username: ${{ secrets.DOCHERHUB_USERNAME }}
                 password: ${{ secrets.DOCHERHUB_TOKEN }}
+
             - name: Build&Push
               env:
                 APP: "kbot"
-                REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
+                REGISTRY: ghcr.io/ashcherbatyi
               run: make image push
     cd:
         name: CD
@@ -31,14 +37,14 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v4
           with:
             fetch-depth: 0
         - run: echo "VERSION=$(git describe --tags --abbrev=0)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
         - uses: mikefarah/yq@master
           with:
-            cmd: yq -i '.image.tag=strenv(VERSION)' kbot/values.yaml
+            cmd: yq -i '.image.tag=strenv(VERSION)' helm/values.yaml
 
         - run: |
             git config user.name github-actions
