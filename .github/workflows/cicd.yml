@@ -24,4 +24,4 @@ jobs:
               env:
                 APP: "kbot"
                 REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
-              run: nake image push
+              run: make image push
