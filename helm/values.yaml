@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   registry: ghcr.io
   repository: ashcherbatyi
-  tag: v1.0.3-c37fe3e
+  tag: v1.0.3-f04af49
   arch: amd64
   os: linux
 teleToken: ""
