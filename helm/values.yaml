@@ -8,6 +8,7 @@ image:
   repository: ashcherbatyi
   tag: v1.0.3-aa7e75d
   arch: amd64
+  os: linux
 teleToken: ""
 secret:
   name: "tele-token-secret"
