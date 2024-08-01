@@ -15,6 +15,9 @@ jobs:
               uses: actions/checkout@v4
               with:
                 fetch-depth: 0
+            - name: Determine version
+              id: build
+              run: echo "version=$(git describe --tags --abbrev=0)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
             - name: Run test
               run: make test
@@ -35,12 +38,17 @@ jobs:
             - name: Run container and test
               env:
                 TELE_TOKEN: ${{ secrets.TELE_TOKEN }}
+                VERSION: ${{ env.version }}
               run: |
                 docker run -d --name kbot_test \
                   -e TELE_TOKEN=${{ secrets.TELE_TOKEN }} \
-                  ghcr.io/ashcherbatyi27/kbot:${{ steps.build.outputs.version }}-linux-amd64
-                sleep 3
-                docker logs kbot_test
+                  ghcr.io/ashcherbatyi27/kbot:${{ env.VERSION }}-linux-amd64
+                sleep 2
+                docker logs kbot_test > container_logs.txt
+                if ! grep -q "kbot started ${{ env.version }}" container_logs.txt; then
+                echo "Expected log message not found!"
+                exit 1
+                fi
                 docker stop kbot_test
                 docker rm kbot_test
     cd:
