@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   registry: ghcr.io/dapr
   repository: ashcherbatyi
-  tag: v1.0.3-f04af49
+  tag: v1.0.3-31531fc
   arch: amd64
   os: linux
 teleToken: ""
