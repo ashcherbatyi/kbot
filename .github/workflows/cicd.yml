@@ -23,9 +23,9 @@ jobs:
               uses: docker/login-action@v2
               with:
                 registry: ghcr.io
-                username: ${{ github.actor }}
-                password: ${{ secrets.GITHUB_TOKEN }}
-
+                username: ${{ secrets.DOCHERHUB_USERNAME }}
+                password: ${{ secrets.DOCHERHUB_TOKEN }}
+                
             - name: Build&Push
               env:
                 APP: "kbot"
