@@ -106,13 +106,18 @@ jobs:
             - name: Encrypt TELE_TOKEN with SOPS
               if: env.token_changed == 'true'
               run: |
-                  echo "apiVersion: v1
+                  cat <<EOF > secret.yaml
+                  apiVersion: v1
                   kind: Secret
                   metadata:
-                    name: tele-token
-                    namespace: default
+                    creationTimestamp: null
+                    name: kbot
+                    namespace: demo
                   data:
-                    token: $(echo -n ${{ secrets.TELE_TOKEN }} | base64)" | sops --encrypt --gcp-kms "projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/keyRings/sops-flux/cryptoKeys/sops-key-flux" > secret-enc.yaml
+                    token: $(echo -n ${{ secrets.TELE_TOKEN }} | base64)
+                  EOF
+                  
+                  sops --encrypt --gcp-kms "projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/keyRings/sops-flux/cryptoKeys/sops-key-flux" --encrypted-regex '^(token)$' secret.yaml > secret-enc.yaml
 
             - name: Checkout Flux GitOps Repo
               if: env.token_changed == 'true'
