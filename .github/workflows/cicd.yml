@@ -152,7 +152,7 @@ jobs:
                 cmd: |
                   current_version=$(yq e '.version' helm/Chart.yaml)
                   new_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-                  yq e -i ".version = \"$new_version\"" helm/Chart.yaml
+                  yq e -i '.version = "'$new_version'"' helm/Chart.yaml
                   yq -i '.image.tag=strenv(VERSION)' helm/values.yaml
             
             - name: Commit and push changes to Kbot Repo
