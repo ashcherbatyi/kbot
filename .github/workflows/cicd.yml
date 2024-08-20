@@ -142,6 +142,7 @@ jobs:
                 git add clusters/demo/secret-enc.yaml
                 git commit -m "Add encrypted TELE_TOKEN secret"
                 git push origin main
+                cd ..
 
             - uses: mikefarah/yq@master
               with:
