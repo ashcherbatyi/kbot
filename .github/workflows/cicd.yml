@@ -58,11 +58,6 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout KBOT Repo
-              uses: actions/checkout@v4
-              with:
-                fetch-depth: 0
-
             - name: Authenticate to Google Cloud
               uses: google-github-actions/auth@v1
               with:
@@ -111,7 +106,7 @@ jobs:
                   kind: Secret
                   metadata:
                     creationTimestamp: null
-                    name: kbot
+                    name: tele-token-secret
                     namespace: demo
                   data:
                     token: $(echo -n ${{ secrets.TELE_TOKEN }} | base64)
@@ -144,6 +139,11 @@ jobs:
                 git push origin main
                 cd ..
 
+            - name: Checkout KBOT Repo
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+                
             - uses: mikefarah/yq@master
               with:
                 cmd: yq -i '.image.tag=strenv(VERSION)' helm/values.yaml
