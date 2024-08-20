@@ -4,6 +4,7 @@ on: push
 
 env:
   TARGETARCH: amd64
+  SOPS_VERSION: v3.9.0
 
 jobs:
     ci:
@@ -74,8 +75,9 @@ jobs:
 
             - name: Install SOPS
               run: |
-                sudo apt-get update
-                sudo apt-get install -y sops jq
+                  curl -LO https://github.com/getsops/sops/releases/download/${{ env.SOPS_VERSION }}/sops-${{ env.SOPS_VERSION }}.linux.amd64
+                  sudo mv sops-${{ env.SOPS_VERSION }}.linux.amd64 /usr/local/bin/sops
+                  sudo chmod +x /usr/local/bin/sops
 
             - name: Check if TELE_TOKEN exists in GCP Secret Manager
               id: check_gcp_secret
