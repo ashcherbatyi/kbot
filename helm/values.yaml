@@ -5,7 +5,7 @@
 replicaCount: 1
 image:
   repository: ghcr.io/ashcherbatyi
-  tag: "v1.1.1-0476b44"
+  tag: "v1.1.1-f8e235f"
   arch: amd64
   os: linux
 secret:
