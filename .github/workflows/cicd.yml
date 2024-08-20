@@ -83,28 +83,28 @@ jobs:
               id: check_gcp_secret
               run: |
                 if gcloud secrets describe TELE_TOKEN; then
+                  echo "exists=true" >> $GITHUB_ENV
                   echo "EXISTING_TOKEN=$(gcloud secrets versions access latest --secret='TELE_TOKEN')" >> $GITHUB_ENV
-                  echo "::set-output name=exists::true"
                 else
-                  echo "::set-output name=exists::false"
+                  echo "exists=false" >> $GITHUB_ENV
                 fi
 
             - name: Compare TELE_TOKEN from GitHub and GCP
               id: compare_tokens
               run: |
-                if [ "${{ steps.check_gcp_secret.outputs.exists }}" = "false" ] || [ "${{ secrets.TELE_TOKEN }}" != "$EXISTING_TOKEN" ]; then
-                  echo "::set-output name=token_changed::true"
+                if [ "$exists" = "false" ] || [ "${{ secrets.TELE_TOKEN }}" != "$EXISTING_TOKEN" ]; then
+                  echo "token_changed=true" >> $GITHUB_ENV
                 else
-                  echo "::set-output name=token_changed::false"
+                  echo "token_changed=false" >> $GITHUB_ENV
                 fi
 
             - name: Update TELE_TOKEN in GCP Secret Manager if changed
-              if: steps.compare_tokens.outputs.token_changed == 'true'
+              if: env.token_changed == 'true'
               run: |
                 echo ${{ secrets.TELE_TOKEN }} | gcloud secrets create TELE_TOKEN --data-file=- --replication-policy=automatic || gcloud secrets versions add TELE_TOKEN --data-file=-
 
             - name: Encrypt TELE_TOKEN with SOPS
-              if: steps.compare_tokens.outputs.token_changed == 'true'
+              if: env.token_changed == 'true'
               run: |
                   echo "apiVersion: v1
                   kind: Secret
@@ -115,7 +115,7 @@ jobs:
                     token: $(echo -n ${{ secrets.TELE_TOKEN }} | base64)" | sops --encrypt --gcp-kms "projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/keyRings/sops-flux/cryptoKeys/sops-key-flux" > secret-enc.yaml
 
             - name: Checkout Flux GitOps Repo
-              if: steps.compare_tokens.outputs.token_changed == 'true'
+              if: env.token_changed == 'true'
               uses: actions/checkout@v4
               with:
                 repository: ashcherbatyi/flux-gitops
@@ -123,13 +123,13 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Copy encrypted secret to Flux GitOps repo
-              if: steps.compare_tokens.outputs.token_changed == 'true'
+              if: env.token_changed == 'true'
               run: |
                 mkdir -p flux-gitops/clusters/demo
                 mv secret-enc.yaml flux-gitops/clusters/demo/secret-enc.yaml
 
             - name: Push encrypted secret to Flux GitOps repo
-              if: steps.compare_tokens.outputs.token_changed == 'true'
+              if: env.token_changed == 'true'
               run: |
                 cd flux-gitops
                 git config user.name github-actions
