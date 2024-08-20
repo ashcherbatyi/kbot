@@ -125,7 +125,7 @@ jobs:
               with:
                 repository: ashcherbatyi/flux-gitops
                 path: flux-gitops
-                token: ${{ secrets.GITHUB_TOKEN }}
+                token: ${{ secrets.GIT_FLUX_PAT_TOKEN }}
 
             - name: Copy encrypted secret to Flux GitOps repo
               if: env.token_changed == 'true'
