@@ -102,12 +102,12 @@ jobs:
               if: steps.compare_tokens.outputs.token_changed == 'true'
               run: |
                     echo "apiVersion: v1
-                    kind: Secret
-                    metadata:
+                  kind: Secret
+                  metadata:
                     name: tele-token
                     namespace: default
-              data:
-                token: $(echo -n ${{ secrets.TELE_TOKEN }} | base64)" | sops --encrypt --gcp-kms "projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/keyRings/sops-flux/cryptoKeys/sops-key-flux" > secret-enc.yaml
+                  data:
+                    token: $(echo -n ${{ secrets.TELE_TOKEN }} | base64)" | sops --encrypt --gcp-kms "projects/${{ secrets.GCP_PROJECT_ID }}/locations/global/keyRings/sops-flux/cryptoKeys/sops-key-flux" > secret-enc.yaml
 
             - name: Checkout Flux GitOps Repo
               if: steps.compare_tokens.outputs.token_changed == 'true'
