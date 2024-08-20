@@ -101,7 +101,7 @@ jobs:
             - name: Encrypt TELE_TOKEN with SOPS
               if: steps.compare_tokens.outputs.token_changed == 'true'
               run: |
-                    echo "apiVersion: v1
+                  echo "apiVersion: v1
                   kind: Secret
                   metadata:
                     name: tele-token
