@@ -145,7 +145,6 @@ jobs:
                 fetch-depth: 0
             - run: echo "VERSION=$(git describe --tags --abbrev=0)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             
-            - name: Increment Helm chart version
             - uses: mikefarah/yq@master
               with:
                 cmd: |
@@ -153,6 +152,7 @@ jobs:
                   new_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
                   yq -i ".version = \"$new_version\"" helm/Chart.yaml
                   yq -i '.image.tag=strenv(VERSION)' helm/values.yaml
+            
             - name: Commit and push changes to Kbot Repo
             - run: |
                 git config user.name github-actions
